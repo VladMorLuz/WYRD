@@ -1,2 +1,2 @@
 # WYRD
-Roguelike Dungeon Crawler — Python + JavaScript Game Project
+Roguelike Dungeon Crawler RPG — Python + JavaScript Game Project
