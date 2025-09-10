@@ -1,0 +1,177 @@
+/* Reset básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #18181b;
+    color: #f4f4f5;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+header, footer {
+    background: #27272a;
+    text-align: center;
+    padding: 1rem 0;
+    box-shadow: 0 2px 8px #0002;
+}
+
+header h1 {
+    font-size: 2rem;
+    letter-spacing: 2px;
+    color: #a3e635;
+    text-shadow: 1px 1px 4px #000a;
+}
+
+footer {
+    font-size: 0.9rem;
+    color: #a1a1aa;
+    margin-top: auto;
+}
+
+main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1rem;
+}
+
+#game-container {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+}
+
+#game-canvas {
+    border: 4px solid #a3e635;
+    background: #22223b;
+    box-shadow: 0 4px 24px #0008;
+    border-radius: 8px;
+    display: block;
+}
+
+#hud {
+    background: #27272a;
+    border-radius: 8px;
+    padding: 1.5rem 1rem;
+    min-width: 220px;
+    box-shadow: 0 2px 12px #0004;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+#hud h2 {
+    font-size: 1.1rem;
+    color: #a3e635;
+    margin-bottom: 0.5rem;
+    border-bottom: 1px solid #3f3f46;
+    padding-bottom: 0.2rem;
+}
+
+#player-stats p,
+#inventory ul,
+#log ul {
+    font-size: 1rem;
+    margin-bottom: 0.3rem;
+}
+
+#player-health {
+    color: #f87171;
+    font-weight: bold;
+}
+
+#player-xp {
+    color: #38bdf8;
+    font-weight: bold;
+}
+
+#dungeon-floor {
+    color: #facc15;
+    font-weight: bold;
+}
+
+#inventory-list {
+    list-style: disc inside;
+    padding-left: 1rem;
+    color: #f4f4f5;
+}
+
+#inventory-list li {
+    margin-bottom: 0.2rem;
+}
+
+#game-log {
+    list-style: none;
+    max-height: 120px;
+    overflow-y: auto;
+    font-size: 0.95rem;
+    color: #a1a1aa;
+}
+
+#game-log li {
+    margin-bottom: 0.2rem;
+    border-left: 3px solid #a3e635;
+    padding-left: 0.5rem;
+}
+
+#controls {
+    background: #23232b;
+    border-radius: 8px;
+    padding: 1rem 2rem;
+    box-shadow: 0 2px 8px #0003;
+    max-width: 420px;
+    margin: 0 auto;
+}
+
+#controls h2 {
+    color: #a3e635;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
+#controls ul {
+    list-style: square inside;
+    color: #f4f4f5;
+}
+
+#controls li {
+    margin-bottom: 0.3rem;
+    font-size: 1rem;
+}
+
+/* Responsividade */
+@media (max-width: 900px) {
+    #game-container {
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
+    }
+    #hud {
+        min-width: 0;
+        width: 100%;
+    }
+}
+
+@media (max-width: 600px) {
+    main {
+        padding: 1rem 0.2rem;
+    }
+    #controls {
+        padding: 0.7rem 0.5rem;
+        max-width: 100%;
+    }
+    #game-canvas {
+        width: 100vw;
+        max-width: 100%;
+        height: auto;
+    }
+}

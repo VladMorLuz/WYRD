@@ -1,0 +1,15 @@
+{
+  "player": {
+    "char": "@",
+    "trait": "humanoid",
+    "color": "cyan",
+    "maxHp": 20,
+    "atk": 3,
+    "def": 0,
+    "hit": 75,
+    "eva": 5,
+    "critChance": 5,
+    "critMult": 2,
+    "xp": 0
+  }
+}
