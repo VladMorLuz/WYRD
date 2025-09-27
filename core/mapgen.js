@@ -1,21 +1,16 @@
-// core/mapgen.js
 (function(){
-    // Dependências: assume Utils e RoomTypes carregados antes
     const Utils = window.Utils;
     if (!Utils) {
         console.error('MapGen: Carregue utils.js primeiro!');
         return;
     }
 
-    // Se RoomTypes não registrado, fallback básico (mas avisa)
     if (!window.RoomTypes || Object.keys(window.RoomTypes).length === 0) {
         console.warn('MapGen: RoomTypes não encontrado. Usando fallbacks internos.');
-        // Fallbacks mínimos aqui, mas ideal carregar roomtypes.js
         window.MapGen = { registerTag: () => {}, TAGS: { empty_room: Utils => Array.from({length: Utils}, () => Array.from({length: Utils}, () => window.TILE.FLOOR)) } };
         return;
     }
 
-    // Configs
     const DEFAULTS = {
         MIN_ROOMS: 12, MAX_ROOMS: 48,
         ROOM_MIN_W: 16, ROOM_MAX_W: 32,
@@ -26,7 +21,6 @@
         MIN_FLOOR_PCT: 0.20
     };
 
-    // Tags de RoomTypes
     const TAGS = window.RoomTypes || {};
 
     function registerTag(name, generatorFn) {
@@ -36,7 +30,6 @@
         return TAGS[name];
     }
 
-    // Aplica borda de wall (chamado após geração de tiles)
     function applyWallBorder(tiles, thickness = DEFAULTS.WALL_THICKNESS) {
         const h = tiles.length, w = tiles[0].length;
         for (let t = 0; t < thickness; t++) {
@@ -53,17 +46,16 @@
         }
     }
 
-    // Slots de porta por room
     function computeDoorSlotsForRoom(w, h) {
         const t = DEFAULTS.WALL_THICKNESS;
         const slots = [];
-        // North/South
+        // Norte/Sul
         const northY = t - 1, southY = h - t;
         for (let x = t; x < w - t; x++) {
             slots.push({side: 'N', x, y: northY});
             slots.push({side: 'S', x, y: southY});
         }
-        // West/East
+        // Oeste/Leste
         const westX = t - 1, eastX = w - t;
         for (let y = t; y < h - t; y++) {
             slots.push({side: 'W', x: westX, y});
@@ -72,7 +64,6 @@
         return slots;
     }
 
-    // Pick slot livre (prioriza inward floor)
     function pickFreeDoorSlot(rng, room, doorsTaken) {
         const allSlots = computeDoorSlotsForRoom(room.w, room.h);
         const sidesOffset = {N: [0,1], S: [0,-1], W: [1,0], E: [-1,0]};
@@ -92,7 +83,6 @@
             return false;
         }
 
-        // Preferred: inward é floor
         let preferred = allSlots.filter(slot => {
             const key = `${slot.side}:${slot.x}:${slot.y}`;
             if (doorsTaken.has(key) || tooClose(slot)) return false;
@@ -108,7 +98,6 @@
             return preferred[Utils.rndInt(rng, 0, preferred.length - 1)];
         }
 
-        // Any free
         let any = allSlots.filter(slot => {
             const key = `${slot.side}:${slot.x}:${slot.y}`;
             return !doorsTaken.has(key) && !tooClose(slot);
@@ -117,18 +106,15 @@
             return any[Utils.rndInt(rng, 0, any.length - 1)];
         }
 
-        // Desperate: qualquer sem taken
         any = allSlots.filter(slot => !doorsTaken.has(`${slot.side}:${slot.x}:${slot.y}`));
         return any.length > 0 ? any[Utils.rndInt(rng, 0, any.length - 1)] : null;
     }
 
-    // ID generator
     let gid = 1;
     function nextId(prefix = 'id') {
         return `${prefix}_${gid++}_${Date.now().toString(36).slice(-4)}`;
     }
 
-    // Popula room (opcional, depende de entities)
     function populateRoom(room, floorNumber, rng) {
         room.metadata = room.metadata || { entities: [] };
         try {
@@ -147,16 +133,14 @@
         }
     }
 
-    // Gera floor
     function generateFloor(floorNumber = 1, opts = {}) {
         const floorSeed = opts.seed || `WYRD_floor_${floorNumber}`;
         const floorRng = Utils.seededRngFrom(floorSeed);
 
         const roomCount = Utils.rndInt(floorRng, opts.minRooms || DEFAULTS.MIN_ROOMS, opts.maxRooms || DEFAULTS.MAX_ROOMS);
 
-        // Tags: essential + complementary
-        const essential = ['start', 'stairs'];
-        const complementary = ['empty_room', 'corridor_h', 'corridor_v', 'treasure', 'monster_room'];
+        const essential = ['start', 'stairs','fountain'];
+        const complementary = ['empty_room', 'corridor_h', 'corridor_v', 'treasure', 'monster_room', 'treasure_room','choke_point','circular_room','cavern'];
         let tags = [...essential];
         for (let i = 0; i < roomCount - essential.length; i++) {
             tags.push(complementary[Utils.rndInt(floorRng, 0, complementary.length - 1)]);
@@ -175,7 +159,6 @@
             let tiles = (TAGS[tag] || TAGS.empty_room)(rng, w, h, roomSeed);
             applyWallBorder(tiles); // Aplica borda aqui, pós-geração
 
-            // Check floor pct
             if (Utils.computeFloorPct(tiles) < DEFAULTS.MIN_FLOOR_PCT) {
                 tiles = (TAGS.empty_room || (() => Array.from({length: h}, () => Array.from({length: w}, () => window.TILE.FLOOR))))(rng, w, h, roomSeed + ':fallback');
                 applyWallBorder(tiles);
@@ -195,7 +178,6 @@
             rooms.push(room);
         }
 
-        // Conexões: spanning tree + extras
         const connections = [];
         const doorsTakenMap = {};
 
@@ -204,7 +186,6 @@
             return doorsTakenMap[roomId];
         }
 
-        // Spanning tree otimizado (evita desconexões)
         const order = rooms.map(r => r.id);
         Utils.shuffleArray(floorRng, order);
         for (let i = 1; i < order.length; i++) {
@@ -229,7 +210,6 @@
             }
         }
 
-        // Extras (loops)
         const extraAttempts = Math.floor(roomCount * 1.2);
         for (let t = 0; t < extraAttempts; t++) {
             if (floorRng() > DEFAULTS.EXTRA_CONNECTION_CHANCE) continue;
@@ -249,7 +229,6 @@
             doorA.targetDoorId = doorB.id;
             doorB.targetDoorId = doorA.id;
 
-            // Abre portas e inward
             const inwardOffset = { N: [0,1], S: [0,-1], W: [1,0], E: [-1,0] };
             if (roomA.tiles[slotA.y]) {
                 roomA.tiles[slotA.y][slotA.x] = window.TILE.FLOOR;
@@ -259,7 +238,6 @@
                     roomA.tiles[iy][ix] = window.TILE.FLOOR;
                 }
             }
-            // Mesmo pra roomB...
 
             roomA.doors.push(doorA);
             roomB.doors.push(doorB);
@@ -284,7 +262,6 @@
         };
     }
 
-    // Get random floor tile
     function getRandomFloorTile(room, rng = Math.random) {
         if (!room.tiles) return { x: Math.floor(room.w / 2), y: Math.floor(room.h / 2) };
         const candidates = [];
@@ -299,7 +276,6 @@
         return candidates.length > 0 ? candidates[Math.floor(rng() * candidates.length)] : { x: Math.floor(room.w / 2), y: Math.floor(room.h / 2) };
     }
 
-    // Spawn for door
     function getSpawnForDoor(room, door) {
         const offset = {N: [0,1], S: [0,-1], W: [1,0], E: [-1,0]};
         const off = offset[door.side] || [0,0];
@@ -321,7 +297,6 @@
             if (inBounds(c.x, c.y) && isFloor(c.x, c.y)) return c;
         }
 
-        // Spiral search
         const cx = Math.floor(room.w / 2), cy = Math.floor(room.h / 2);
         const radius = Math.max(3, Math.floor(Math.min(room.w, room.h) / 4));
         for (let r = 1; r <= radius; r++) {
@@ -332,12 +307,10 @@
             }
         }
 
-        // Clamp fallback
         const fb = candidates[0];
         return { x: Utils.clamp(fb.x, 1, room.w - 2), y: Utils.clamp(fb.y, 1, room.h - 2) };
     }
 
-    // Exposição
     window.MapGen = {
         generateFloor,
         registerTag,

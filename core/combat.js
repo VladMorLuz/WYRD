@@ -1,7 +1,7 @@
 (function(){
     const CONF = {
         turnThreshold: 100,
-        speedScale: 28,
+        speedScale: 20,
         tickPausedWhileMenu: true
     };
 
@@ -186,40 +186,57 @@
     }
 
     function ensureCombatMenu() {
-        let menu = document.getElementById('combat-menu');
-        if (menu) return menu;
-        menu = document.createElement('div');
-        menu.id = 'combat-menu';
-        menu.style.position = 'absolute';
-        menu.style.left = '12px';
-        menu.style.bottom = '12px';
-        menu.style.padding = '8px';
-        menu.style.background = '#111d';
-        menu.style.border = '1px solid #444';
-        menu.style.display = 'none';
-        menu.style.zIndex = 9999;
-        menu.style.gap = '6px';
-        menu.style.display = 'grid';
-        menu.style.gridTemplateColumns = 'repeat(5, auto)';
+    let menu = document.getElementById('combat-menu');
+    if (menu) return menu;
+    menu = document.createElement('div');
+    menu.id = 'combat-menu';
+    menu.style.position = 'absolute';
+    menu.style.left = '12px';
+    menu.style.bottom = '80px'; // antes era 12px → sobe um pouco o menu
+    menu.style.padding = '10px';
+    menu.style.background = '#111c';
+    menu.style.border = '1px solid #555';
+    menu.style.borderRadius = '6px';
+    menu.style.display = 'none';
+    menu.style.zIndex = 9999;
+    menu.style.display = 'flex';
+    menu.style.flexDirection = 'column';
+    menu.style.gap = '6px';
+    menu.style.minWidth = '120px';
+    menu.style.boxShadow = '0 2px 8px rgba(0,0,0,0.5)';
 
-        const btns = [
-            { id: 'atk', text: 'ATACAR', fn: playerAttack },
-            { id: 'def', text: 'DEFENDER', fn: playerDefend },
-            { id: 'item', text: 'ITEM', fn: playerItem },
-            { id: 'skill', text: 'HABILIDADE', fn: playerSkill },
-            { id: 'flee', text: 'FUGIR', fn: playerFlee }
-        ];
-        for (const b of btns) {
-            const el = document.createElement('button');
-            el.id = 'combat-btn-' + b.id;
-            el.textContent = b.text;
-            el.style.padding = '6px 8px';
-            el.addEventListener('click', () => { b.fn(); });
-            menu.appendChild(el);
-        }
-        document.body.appendChild(menu);
-        return menu;
+    const btns = [
+        { id: 'atk', text: '⚔️ ATACAR', fn: playerAttack },
+        { id: 'def', text: '🛡️ DEFENDER', fn: playerDefend },
+        { id: 'item', text: '🧪 ITEM', fn: playerItem },
+        { id: 'skill', text: '✨ HABILIDADE', fn: playerSkill },
+        { id: 'flee', text: '🏃 FUGIR', fn: playerFlee }
+    ];
+    for (const b of btns) {
+        const el = document.createElement('button');
+        el.id = 'combat-btn-' + b.id;
+        el.textContent = b.text;
+        el.style.padding = '8px 12px';
+        el.style.background = '#222';
+        el.style.color = '#eee';
+        el.style.border = '1px solid #444';
+        el.style.borderRadius = '4px';
+        el.style.cursor = 'pointer';
+        el.style.fontFamily = 'monospace';
+        el.style.fontSize = '14px';
+        el.addEventListener('mouseenter', () => {
+            el.style.background = '#333';
+        });
+        el.addEventListener('mouseleave', () => {
+            el.style.background = '#222';
+        });
+        el.addEventListener('click', () => { b.fn(); });
+        menu.appendChild(el);
     }
+    document.body.appendChild(menu);
+    return menu;
+}
+
 
     function showPlayerMenu() {
         const menu = ensureCombatMenu();
@@ -234,42 +251,75 @@
     }
 
     function renderCombat() {
-        const canvas = document.getElementById('game-canvas');
-        if (!canvas) return;
-        const ctx = canvas.getContext('2d');
-        const dpr = window.devicePixelRatio || 1;
-        const w = canvas.width / dpr;
-        const h = canvas.height / dpr;
-        ctx.save();
-        ctx.setTransform(1,0,0,1,0,0);
-        ctx.clearRect(0,0,w,h);
+    const canvas = document.getElementById('game-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const dpr = window.devicePixelRatio || 1;
+    const w = canvas.width / dpr;
+    const h = canvas.height / dpr;
+    ctx.save();
+    ctx.setTransform(1,0,0,1,0,0);
+    ctx.clearRect(0,0,w,h);
 
-        ctx.fillStyle = '#0b0b0f';
-        ctx.fillRect(0, 0, w, h);
-        ctx.fillStyle = '#222';
-        ctx.fillRect(0, h*0.48, w, h*0.04);
+    // background
+    ctx.fillStyle = '#0b0b0f';
+    ctx.fillRect(0, 0, w, h);
+    ctx.fillStyle = '#222';
+    ctx.fillRect(0, h*0.48, w, h*0.04);
 
-        const px = w * 0.25, py = h * 0.75;
+    // posições
+    const px = w * 0.25, py = h * 0.75;
+    const ex = w * 0.75, ey = h * 0.25;
+
+    if (State.player?.sprite instanceof Image && State.player.sprite.complete) {
+        try {
+            ctx.drawImage(State.player.sprite, px - 24, py - 24, 48, 48);
+        } catch (e) {
+            // fallback visual caso drawImage falhe
+            ctx.fillStyle = State.player?.color || '#38bdf8';
+            ctx.fillRect(px - 24, py - 24, 48, 48);
+            ctx.fillStyle = '#fff';
+            ctx.font = '20px monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText(State.player?.char || '@', px, py);
+        }
+    } else {
         ctx.fillStyle = State.player?.color || '#38bdf8';
         ctx.fillRect(px - 24, py - 24, 48, 48);
         ctx.fillStyle = '#fff';
         ctx.font = '20px monospace';
         ctx.textAlign = 'center';
         ctx.fillText(State.player?.char || '@', px, py);
+    }
 
-        const ex = w * 0.75, ey = h * 0.25;
+    if (State.enemy?.sprite instanceof Image && State.enemy.sprite.complete) {
+        try {
+            ctx.drawImage(State.enemy.sprite, ex - 24, ey - 24, 48, 48);
+        } catch (e) {
+            ctx.fillStyle = State.enemy?.color || '#f97316';
+            ctx.fillRect(ex - 24, ey - 24, 48, 48);
+            ctx.fillStyle = '#fff';
+            ctx.font = '20px monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText(State.enemy?.char || 'M', ex, ey);
+        }
+    } else {
         ctx.fillStyle = State.enemy?.color || '#f97316';
         ctx.fillRect(ex - 24, ey - 24, 48, 48);
+        ctx.fillStyle = '#fff';
+        ctx.font = '20px monospace';
+        ctx.textAlign = 'center';
         ctx.fillText(State.enemy?.char || 'M', ex, ey);
-
-        drawBar(ctx, px, py - 36, clamp((State.player?.hp || 0) / (State.player?.maxHp || 1), 0, 1), '#ef4444');
-        drawBar(ctx, ex, ey + 36, clamp((State.enemy?.hp || 0) / (State.enemy?.maxHp || 1), 0, 1), '#ef4444');
-
-        drawBar(ctx, px, py - 56, clamp((State.player?.turnMeter || 0) / CONF.turnThreshold, 0, 1), '#3b82f6', true);
-        drawBar(ctx, ex, ey + 56, clamp((State.enemy?.turnMeter || 0) / CONF.turnThreshold, 0, 1), '#3b82f6', true);
-
-        ctx.restore();
     }
+
+    drawBar(ctx, px, py - 36, clamp((State.player?.hp || 0) / (State.player?.maxHp || 1), 0, 1), '#ef4444');
+    drawBar(ctx, ex, ey + 36, clamp((State.enemy?.hp || 0) / (State.enemy?.maxHp || 1), 0, 1), '#ef4444');
+
+    drawBar(ctx, px, py - 56, clamp((State.player?.turnMeter || 0) / CONF.turnThreshold, 0, 1), '#3b82f6', true);
+    drawBar(ctx, ex, ey + 56, clamp((State.enemy?.turnMeter || 0) / CONF.turnThreshold, 0, 1), '#3b82f6', true);
+
+    ctx.restore();
+}
 
     function drawBar(ctx, x, y, pct, color, isAtb = false) {
         const barW = 120, barH = 8;
@@ -335,7 +385,38 @@
         State.active = true;
         State.player = player;
         State.enemy = enemy;
+        try {
+            if (!State.player.id) State.player.id = "player";
+
+     function forceBattleSprite(entity, id) {
+        if (!id) return;
+        const path = `assets/battle/${id}.png`;
+        const img = new Image();
+        img.onload = function() {
+            entity.sprite = img;
+            console.log(`[Combat] sprite (battle) carregado: ${path}`);
+        };
+        img.onerror = function() {
+            console.warn(`[Combat] não achou sprite battle em: ${path}`);
+        };
+        img.src = path;
+        }
+
+        if (State.player?.id) forceBattleSprite(State.player, State.player.id);
+        if (State.enemy?.id)  forceBattleSprite(State.enemy,  State.enemy.id);
+
+     } catch(e) {
+        console.warn('forceBattleSprite falhou:', e);
+    }
         State.room = room;
+        try {
+     if (typeof tryAutoLoadSprite === 'function') {
+        if (State.player?.id) tryAutoLoadSprite(State.player, State.player.id);
+        if (State.enemy?.id)  tryAutoLoadSprite(State.enemy,  State.enemy.id);
+    }
+} catch(e) {
+    console.warn('sprite reload falhou:', e);
+}
         State.awaitingPlayerAction = false;
         State.lastTick = 0;
 
@@ -358,6 +439,9 @@
         else if (key === '1') playerItem();
         else if (key === '2') playerSkill();
     }
+
+
+    
 
     window.Combat = {
         start,

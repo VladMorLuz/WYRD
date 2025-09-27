@@ -1,4 +1,5 @@
 (function(){
+    // Utilitários globais: PRNG, helpers para MapGen/Renderer/etc.
     const Utils = {
         // FNV-1a para seed numérica de string
         xfnv1a: function(str) {
@@ -44,7 +45,7 @@
             return Math.max(a, Math.min(b, v));
         },
 
-        // % de floor tiles (FLOOR/ENTRY/EXIT), robusto contra arrays vazios
+        // % de floor tiles (FLOOR/ENTRY/EXIT)
         computeFloorPct: function(tiles) {
             if (!Array.isArray(tiles) || tiles.length === 0) return 0;
             let count = 0, total = 0;

@@ -15,13 +15,14 @@
         "loot": {
             "chance": 50,
             "items": []
-
-        }
+        },
+        "spriteWander": "assets/wander/rat.png",
+        "spriteBattle": "assets/battle/rat.png"
     },
     {
         "id": "goblin",
         "char": "g",
-        "trait": "humanoid",        
+        "trait": "humanoid",
         "color": "green",
         "maxHp": [10, 14],
         "atk": [2, 4],
@@ -34,8 +35,9 @@
         "loot": {
             "chance": 50,
             "items": []
-
-        }
+        },
+        "spriteWander": "assets/wander/goblin.png",
+        "spriteBattle": "assets/battle/goblin.png"
     },
     {
         "id": "skeleton",
@@ -53,7 +55,8 @@
         "loot": {
             "chance": 50,
             "items": []
-
-        }
+        },
+        "spriteWander": "assets/wander/skeleton.png",
+        "spriteBattle": "assets/battle/skeleton.png"
     }
 ]

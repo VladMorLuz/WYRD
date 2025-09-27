@@ -1,15 +1,17 @@
 {
-  "player": {
-    "char": "@",
-    "trait": "humanoid",
-    "color": "cyan",
-    "maxHp": 20,
-    "atk": 3,
-    "def": 0,
-    "hit": 75,
-    "eva": 5,
-    "critChance": 5,
-    "critMult": 2,
-    "xp": 0
-  }
+    "player": {
+        "char": "@",
+        "trait": "humanoid",
+        "color": "cyan",
+        "maxHp": 20,
+        "atk": 30,
+        "def": 0,
+        "hit": 75,
+        "eva": 5,
+        "critChance": 5,
+        "critMult": 2,
+        "xp": 0,
+        "spriteWander": "assets/wander/player.png",
+        "spriteBattle": "assets/battle/player.png"
+    }
 }

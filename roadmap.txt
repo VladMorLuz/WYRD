@@ -1,0 +1,12 @@
+# ROADMAP
+
+- Matar player FORA de luta SE tiver 0 HP.
+- Remover Atualização constante no LOG sobre movimentos dos inimigos
+- Permitir multiplos inimigos por sala; multiplos inimigos em uma mesma luta.
+- Adicionar sprites de batalha.
+- Adicionar áudio
+- Adicionar um sistema de inventário/equipamento funcional.
+- Adicionar baús.
+- Adicionar novo layout de batalha.
+- TESTAR nova Render (2.5D) e nova Engine.
+- Adicionar novo Game Over

@@ -78,7 +78,6 @@
         },
 
         start: function(rng, w, h, seed) {
-    // Min size garantido
     const minW = Math.max(w, 10), minH = Math.max(h, 8);
     const tiles = RoomTypes.empty_room(rng, minW, minH, seed);
     // Marca centro como ENTRY
@@ -99,22 +98,20 @@
 
         monster_room: function(rng, w, h, seed) {
             const tiles = RoomTypes.empty_room(rng, w, h, seed);
-            const count = Math.max(1, Math.floor((w * h) / 40)); // Pilares aleatórios pra ambushed feel
+            const count = Math.max(1, Math.floor((w * h) / 40)); 
             for (let i = 0; i < count; i++) {
                 const rx = rndIntLocal(rng, 2, w - 3);
                 const ry = rndIntLocal(rng, 2, h - 3);
-                if (tiles[ry][rx] !== window.TILE.FLOOR) continue; // Evita overwrite
+                if (tiles[ry][rx] !== window.TILE.FLOOR) continue; 
                 tiles[ry][rx] = window.TILE.WALL; // Pilar
             }
             return tiles;
         }
     };
 
-    // Expõe e registra no MapGen se existir
     if (!window.RoomTypes) window.RoomTypes = {};
     Object.assign(window.RoomTypes, RoomTypes);
 
-    // Auto-registro se MapGen carregado
     if (window.MapGen && typeof window.MapGen.registerTag === 'function') {
         for (const key in RoomTypes) {
             window.MapGen.registerTag(key, RoomTypes[key]);

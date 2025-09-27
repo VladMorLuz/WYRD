@@ -6,6 +6,8 @@
     Game.currentRoomId = null;
     Game.running = false;
 
+    
+
     const Input = {
         up: false,
         down: false,
@@ -152,6 +154,69 @@
             return;
         }
         Game.floor = window.MapGen.generateFloor(opts.floorNumber || 1, opts);
+
+const Engine = {
+    running: false,
+    floor: 1, 
+    init(player) {
+        this.player = player;
+        this.running = true;
+        this.loop();
+    },
+
+    loop() {
+        if (!this.running) return;
+
+        this.update();
+
+        Renderer.render(this.player);
+
+        requestAnimationFrame(this.loop.bind(this));
+    },
+
+    update() {
+        if (this.player.hp <= 0) {
+            this.gameOver();
+            return;
+        }
+
+        if (this.player.room?.type === "stairs") {
+            this.nextFloor();
+            return;
+        }
+
+        if (this.player.room?.metadata?.entities) {
+            this.player.room.metadata.entities.forEach(e => {
+                if (e !== this.player) {
+                    e.act(this.player, this.player.room);
+                }
+            });
+        }
+    },
+
+    gameOver() {
+        this.running = false;
+        UI.showGameOver(); // chama UI pra exibir tela
+    },
+
+    nextFloor() {
+        this.floor++;
+        safeLog(`Descendo para o andar ${this.floor}...`);
+
+        // Gera novo andar
+        const newMap = MapGen.generateFloor(20, 20); // tamanho fixo (pode ser escalado por floor)
+        Renderer.setMap(newMap);
+
+        // Teleporta player para a nova sala inicial
+        this.player.room = newMap.start;
+        this.player.x = this.player.room.centerX;
+        this.player.y = this.player.room.centerY;
+
+        // Dá um "refresh" visual
+        Renderer.render(this.player);
+    }
+};
+
         Game.currentRoomId = Game.floor.entryRoomId;
         const startRoom = getCurrentRoom();
         if (!startRoom) return;
@@ -160,14 +225,13 @@
         Game.player = new window.Player(spawn.x, spawn.y);
         Game.entities = startRoom.metadata?.entities || [];
         Game.running = true;
-
         window.Renderer?.init?.();
         window.UI?.updateFloor?.(Game.floor.floorNumber);
         window.Renderer?.drawRoom?.(startRoom, Game.player, Game.entities.filter(e => e.alive));
         updateUI();
         window.UI?.log?.(`Bem-vindo ao Andar ${Game.floor.floorNumber}! 🏰`);
-
         requestAnimationFrame(gameTick);
+        
     };
 
     window.Game = Game;
