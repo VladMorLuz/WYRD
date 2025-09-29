@@ -32,32 +32,25 @@
         return !!canvas;
     }
 
-    function resizeCanvas() {
-        if (!canvas) return;
-        const dpr = window.devicePixelRatio || 1;
-        
-        // Pega o tamanho real que o CSS está forçando no elemento
-        const displayWidth = canvas.clientWidth;
-        const displayHeight = canvas.clientHeight;
-
-        // Verifica se o tamanho do buffer de desenho é diferente
-        if (canvas.width !== Math.floor(displayWidth * dpr) || canvas.height !== Math.floor(displayHeight * dpr)) {
-            canvas.width = Math.floor(displayWidth * dpr);
-            canvas.height = Math.floor(displayHeight * dpr);
-            
-            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-            ctx.imageSmoothingEnabled = false; // Mantém a pixel art crocante
-            console.log(`Canvas redimensionado para: ${canvas.width}x${canvas.height}`);
-            return true; // Retorna true se houve mudança
-        }
-        return false; // Retorna false se nada mudou
-    }
-
     function _setupPixelRatio() {
-        // A configuração inicial agora só chama a função de redimensionamento
-        resizeCanvas();
-        // E adiciona um listener para redimensionar sempre que a tela mudar de tamanho
-        window.addEventListener('resize', resizeCanvas);
+        if (!canvas) return; // Garante que o canvas existe
+
+        devicePixelRatioCached = window.devicePixelRatio || 1;
+        
+        // MUDANÇA CRÍTICA: Em vez de um tamanho fixo, pegamos o tamanho REAL do elemento na tela.
+        const rect = canvas.getBoundingClientRect();
+        const w = rect.width;
+        const h = rect.height;
+
+        // Isso ajusta a resolução interna do canvas para a do dispositivo (evita serrilhado)
+        canvas.width = Math.floor(w * devicePixelRatioCached);
+        canvas.height = Math.floor(h * devicePixelRatioCached);
+
+        // O style.width/height não é mais necessário aqui, pois o CSS já está fazendo o trabalho.
+
+        // Isso avisa ao contexto de desenho para escalar tudo de acordo com a densidade de pixels.
+        ctx.setTransform(devicePixelRatioCached, 0, 0, devicePixelRatioCached, 0, 0);
+        ctx.imageSmoothingEnabled = false;
     }
 
     function setDebug(flag) {
@@ -378,6 +371,24 @@
         }
     }
 
+    // No final do arquivo renderer.js, antes do `})();`
+
+    // Listener para redimensionar o canvas se a janela mudar de tamanho
+    window.addEventListener('resize', () => {
+        if (canvas) {
+            _setupPixelRatio();
+            // Opcional: Redesenha a sala atual para não ficar uma tela preta vazia
+            if (window.Game && window.Game.running) {
+                const room = window.Game.floor?.getRoomById(window.Game.currentRoomId);
+                const player = window.Game.player;
+                const entities = window.Game.entities;
+                if (room) {
+                    drawRoom(room, player, entities.filter(e => e.alive));
+                }
+            }
+        }
+    }, { passive: true });
+
     window.Renderer = {
         init: function(options = {}) {
             opts = Object.assign({}, opts, options);
@@ -385,7 +396,6 @@
             _setupPixelRatio();
             preloadDefaultSprites();
         },
-        resize: resizeCanvas, // <-- ADICIONE ESTA LINHA
         setDebug,
         clear,
         drawRoom,
