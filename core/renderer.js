@@ -32,19 +32,32 @@
         return !!canvas;
     }
 
+    function resizeCanvas() {
+        if (!canvas) return;
+        const dpr = window.devicePixelRatio || 1;
+        
+        // Pega o tamanho real que o CSS está forçando no elemento
+        const displayWidth = canvas.clientWidth;
+        const displayHeight = canvas.clientHeight;
+
+        // Verifica se o tamanho do buffer de desenho é diferente
+        if (canvas.width !== Math.floor(displayWidth * dpr) || canvas.height !== Math.floor(displayHeight * dpr)) {
+            canvas.width = Math.floor(displayWidth * dpr);
+            canvas.height = Math.floor(displayHeight * dpr);
+            
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            ctx.imageSmoothingEnabled = false; // Mantém a pixel art crocante
+            console.log(`Canvas redimensionado para: ${canvas.width}x${canvas.height}`);
+            return true; // Retorna true se houve mudança
+        }
+        return false; // Retorna false se nada mudou
+    }
+
     function _setupPixelRatio() {
-        devicePixelRatioCached = window.devicePixelRatio || 1;
-        const w = window.CANVAS_WIDTH || canvas.clientWidth || 800;
-        const h = window.CANVAS_HEIGHT || canvas.clientHeight || 600;
-
-        canvas.style.width = w + 'px';
-        canvas.style.height = h + 'px';
-
-        canvas.width = Math.floor(w * devicePixelRatioCached);
-        canvas.height = Math.floor(h * devicePixelRatioCached);
-
-        ctx.setTransform(devicePixelRatioCached, 0, 0, devicePixelRatioCached, 0, 0);
-        ctx.imageSmoothingEnabled = false; // Garantido para pixel art
+        // A configuração inicial agora só chama a função de redimensionamento
+        resizeCanvas();
+        // E adiciona um listener para redimensionar sempre que a tela mudar de tamanho
+        window.addEventListener('resize', resizeCanvas);
     }
 
     function setDebug(flag) {
@@ -372,6 +385,7 @@
             _setupPixelRatio();
             preloadDefaultSprites();
         },
+        resize: resizeCanvas, // <-- ADICIONE ESTA LINHA
         setDebug,
         clear,
         drawRoom,
