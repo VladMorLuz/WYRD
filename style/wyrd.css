@@ -180,12 +180,59 @@ body {
 .ui-content::-webkit-scrollbar, .ui-log::-webkit-scrollbar { width:8px; }
 .ui-content::-webkit-scrollbar-thumb, .ui-log::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.04); border-radius:6px; }
 
-@media (max-width: 900px) {
-    #game-screen { flex-direction: column; top: 84px; bottom: 84px; }
-    #game-container { flex-direction: column; gap:10px; padding:6px; }
-    #game-canvas { height: 420px; }
-    #ui-panel { width: 100%; max-width:none; }
-    #site-header, #site-footer { margin:8px; }
+/* Substitua o @media (max-width: 900px) existente por este */
+@media (max-width: 900px) and (orientation: portrait) {
+    /* ESTE CSS SÓ APLICA NO CELULAR EM PÉ (PORTRAIT) */
+    #game-screen {
+        flex-direction: column;
+        top: 60px; /* Menor espaço para header */
+        bottom: 60px; /* Menor espaço para footer */
+    }
+    #game-container {
+        flex-direction: column;
+        gap: 10px;
+        padding: 6px;
+    }
+    #game-canvas {
+        flex: 1; /* Ocupa o espaço que sobrar */
+        height: auto;
+    }
+    #ui-panel {
+        width: 100%;
+        max-width: none;
+        max-height: 250px; /* Limita altura da UI */
+        min-height: 200px;
+    }
+    #site-header, #site-footer {
+        padding: 4px 10px;
+    }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+    /* ESTE CSS SÓ APLICA NO CELULAR DEITADO (LANDSCAPE) */
+    body {
+        overflow: hidden; /* Garante que não haja scroll */
+    }
+    #game-screen {
+        flex-direction: row; /* Mantém a UI na lateral */
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 100vh; /* Ocupa 100% da altura da tela */
+        padding: 8px;
+    }
+    #site-header, #site-footer {
+        display: none; /* Esconde header e footer pra dar mais espaço pro jogo */
+    }
+    #ui-panel {
+        min-width: 220px; /* Reduz a largura mínima da UI */
+        max-width: 240px;
+    }
+    #mobile-controls {
+        bottom: 10px;
+        left: 10px;
+    }
 }
 #mobile-controls {
     position: absolute;
