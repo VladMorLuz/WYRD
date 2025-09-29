@@ -1,4 +1,4 @@
-const CACHE_NAME = 'wyrd-cache-v1';
+const CACHE_NAME = 'wyrd-cache-v2';
 const urlsToCache = [
   '/',
   '/index.html',

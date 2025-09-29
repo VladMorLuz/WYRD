@@ -208,76 +208,60 @@ body {
     }
 }
 
-/* ============================================== */
-/* REGRAS PARA DISPOSITIVOS MÓVEIS       */
-/* ============================================== */
+/* Removemos o @media (max-width: 900px) and (orientation: portrait) */
+/* E o @media (max-height: 500px) and (orientation: landscape) */
+/* E usamos um mais simples e abrangente. */
 
-/* Estilos para CELULAR DEITADO (LANDSCAPE) */
-@media screen and (orientation: landscape) and (max-height: 600px) {
-    body {
-        /* Garante que a interface não seja "empurrada" pelo teclado virtual se ele aparecer */
-        min-height: 100vh;
-        min-height: -webkit-fill-available;
-    }
+/* Regras para telas PEQUENAS (celulares em geral) */
+@media (max-width: 900px) {
 
+    /* ESCONDE header/footer para ganhar espaço */
     #site-header, #site-footer {
-        display: none; /* Esconde header e footer pra dar mais espaço pro jogo */
+        display: none;
     }
 
+    /* Ajusta a tela do jogo para ocupar TUDO */
     #game-screen {
-        flex-direction: row; /* Mantém a UI na lateral */
-        position: absolute; /* Ocupa a tela toda */
         top: 0;
         bottom: 0;
         left: 0;
         right: 0;
-        height: 100%;
-        padding: 8px;
-        gap: 8px;
+        height: 100vh;
+        width: 100vw;
+        padding: 8px; /* Adiciona um respiro nas bordas */
     }
 
-    #ui-panel {
-        min-width: 240px;
-        max-width: 260px; /* Um pouco mais de espaço para a UI */
+    /* QUANDO O CELULAR ESTÁ DEITADO (LANDSCAPE) */
+    @media (orientation: landscape) {
+        #game-container {
+            flex-direction: row; /* Mantém UI na lateral */
+        }
+        #ui-panel {
+            min-width: 200px; /* Um pouco mais estreito */
+            max-width: 220px;
+        }
+        #mobile-controls { /* Posiciona os controles */
+            left: 15px;
+            bottom: 15px;
+            right: auto;
+        }
     }
 
-    #mobile-controls {
-        bottom: 10px;
-        left: 10px;
-        right: auto; /* Garante que ele fique só na esquerda */
-    }
-}
-
-/* Estilos para CELULAR EM PÉ (PORTRAIT) */
-@media screen and (orientation: portrait) and (max-width: 900px) {
-    #game-screen {
-        flex-direction: column;
-        top: 60px;
-        bottom: 50px;
-    }
-
-    #game-container {
-        flex-direction: column;
-        gap: 10px;
-        padding: 6px;
-        height: 100%;
-    }
-
-    #game-canvas {
-        flex-grow: 1; /* Deixa o canvas ocupar o espaço vertical disponível */
-        min-height: 200px; /* Garante uma altura mínima pro canvas */
-    }
-
-    #ui-panel {
-        width: 100%;
-        max-width: none;
-        flex-shrink: 0; /* Impede que a UI encolha */
-        max-height: 45%; /* Limita a altura em porcentagem */
-    }
-
-    #site-header, #site-footer {
-        padding: 4px 10px;
-        flex-shrink: 0;
+    /* QUANDO O CELULAR ESTÁ EM PÉ (PORTRAIT) */
+    @media (orientation: portrait) {
+        #game-container {
+            flex-direction: column; /* Coloca a UI embaixo do canvas */
+        }
+        #game-canvas {
+            flex-grow: 1; /* Deixa o canvas ocupar o espaço que sobrar */
+            height: auto;
+        }
+        #ui-panel {
+            flex-shrink: 0; /* Impede que a UI encolha demais */
+            width: 100%;
+            max-width: none;
+            height: 240px; /* Altura fixa para a UI embaixo */
+        }
     }
 }
 #mobile-controls {

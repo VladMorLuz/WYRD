@@ -310,4 +310,22 @@ const Engine = {
 
 
     document.addEventListener('DOMContentLoaded', setupMobileControls);
+
+    // No final de core/engine.js
+
+function forceLandscape() {
+    try {
+        if (screen.orientation && typeof screen.orientation.lock === 'function') {
+            screen.orientation.lock('landscape').catch(err => {
+                console.warn('Não foi possível forçar a orientação:', err);
+            });
+        }
+    } catch (e) {
+        console.error('API de Orientação não suportada.', e);
+    }
+}
+
+// Quando o jogo começar de verdade, a gente tenta forçar o landscape.
+// Vamos adicionar isso dentro da sua função startNewGame no index.html.
+
 })();
