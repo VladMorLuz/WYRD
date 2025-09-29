@@ -1,7 +1,7 @@
 (function(){
     const CONF = {
         turnThreshold: 100,
-        speedScale: 20,
+        speedScale: 15,
         tickPausedWhileMenu: true
     };
 
@@ -54,6 +54,9 @@
     }
 
     function endCombat(reason) {
+        document.getElementById('mobile-controls')?.classList.remove('hidden');
+
+
         if (!State.active) return;
         State.active = false;
         State.awaitingPlayerAction = false;
@@ -70,16 +73,7 @@
         }
 
         if (State.player && !State.player.alive) {
-            log('💀 Você morreu! Fim de jogo.');
-            window.Game = window.Game || {};
-            window.Game.running = false;
-            setTimeout(()=>{
-                const menu = document.getElementById('menu-screen');
-                const game = document.getElementById('game-screen');
-                if (menu) menu.style.display = 'flex';
-                if (game) game.style.display = 'none';
-                log('Retornando ao menu...');
-            }, 800);
+            window.UI?.showGameOverPopup();
         }
 
         try {
@@ -373,6 +367,9 @@
     }
 
     function start(player, enemy, room) {
+        document.getElementById('mobile-controls')?.classList.add('hidden');
+
+
         if (!player || !enemy || !room) {
             console.warn('Combat.start inválido — requisitos: player, enemy, room');
             return;

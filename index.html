@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>WYRD - RPG Dungeon Crawler</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#171717">
     <link rel="stylesheet" href="style/wyrd.css" />
 </head>
 <body>
@@ -38,6 +40,17 @@
         <div id="game-container">
             <canvas id="game-canvas" width="800" height="600" aria-label="Canvas do jogo"></canvas>
 
+            <div id="mobile-controls">
+                <div class="dpad">
+                    <button id="dpad-up" class="dpad-btn">▲</button>
+                    <button id="dpad-left" class="dpad-btn">◀</button>
+                    <button id="dpad-right" class="dpad-btn">▶</button>
+                    <button id="dpad-down" class="dpad-btn">▼</button>
+                </div>
+                <div class="action-btn-container">
+                    <button id="action-btn" class="action-btn">E</button>
+                </div>
+            </div>
             <div id="ui-panel">
                 <div id="ui-top">
                     <div class="tabs">
@@ -80,7 +93,7 @@
 
     <footer id="site-footer">
         <div>WYRD • &copy; <span id="year"></span> • Construído com minha dor e sofrimento</div>
-        <div class="footer-right">v0.0.alguma coisa</div>
+        <div class="footer-right">v0.0.1.alguma coisa - Por favor, me mata logo</div>
     </footer>
 
     <script>
@@ -105,6 +118,16 @@
                 if (btn) btn.classList.add('active');
             }
         });
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').then(registration => {
+                    console.log('SW registered: ', registration);
+                }).catch(registrationError => {
+                    console.log('SW registration failed: ', registrationError);
+                });
+            });
+        }
     </script>
 
     <script src="core/constants.js"></script>

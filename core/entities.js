@@ -253,18 +253,19 @@
         }
 
         act(player, room) {
-            if (!this.alive) return;
-            const dx = player.x - this.x, dy = player.y - this.y;
-            const dist = Math.abs(dx) + Math.abs(dy);
-            if (dist === 1 || window.Combat?.isActive?.()) {
-                safeLog(`Mob ${this.char} (${this.x},${this.y}) agindo contra player em (${player.x},${player.y}), dist: ${dist}`);
-            }
-            if (dist === 1) {
-                resolveAttack(this, player);
-            } else {
-                this.move(Math.sign(dx), Math.sign(dy), room);
-            }
+        if (!this.alive) return;
+        const dx = player.x - this.x, dy = player.y - this.y;
+        const dist = Math.abs(dx) + Math.abs(dy);
+        
+        // Remova ou comente a linha abaixo
+        // safeLog(`Mob ${this.char} (${this.x},${this.y}) agindo contra player em (${player.x},${player.y}), dist: ${dist}`);
+        
+        if (dist === 1) {
+            resolveAttack(this, player);
+        } else {
+            this.move(Math.sign(dx), Math.sign(dy), room);
         }
+    }
     }
 
     function resolveAttack(attacker, defender) {

@@ -187,3 +187,57 @@ body {
     #ui-panel { width: 100%; max-width:none; }
     #site-header, #site-footer { margin:8px; }
 }
+#mobile-controls {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    pointer-events: none; /* Permite cliques "através" do container */
+    z-index: 100;
+}
+
+#mobile-controls.hidden {
+    display: none;
+}
+
+.dpad {
+    display: grid;
+    grid-template-areas:
+        ". up ."
+        "left . right"
+        ". down .";
+    gap: 8px;
+    width: 150px;
+    height: 150px;
+    pointer-events: auto; /* Reativa cliques para os botões */
+}
+
+.dpad-btn, .action-btn {
+    width: 45px;
+    height: 45px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    font-size: 1.5rem;
+    border-radius: 50%;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.action-btn {
+    width: 60px;
+    height: 60px;
+    font-size: 2rem;
+    pointer-events: auto; /* Reativa cliques para os botões */
+}
+
+#dpad-up { grid-area: up; }
+#dpad-down { grid-area: down; }
+#dpad-left { grid-area: left; }
+#dpad-right { grid-area: right; }

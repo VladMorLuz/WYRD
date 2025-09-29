@@ -101,7 +101,13 @@
 
     function gameTick(now) {
         if (!Game.running) return;
-        const room = getCurrentRoom();
+        if (Game.player && Game.player.hp <= 0) {
+        Game.running = false;
+        window.UI?.showGameOverPopup(); // Usa a função que já existe no UI!
+        return; // Para a execução do tick
+    }
+
+    const room = getCurrentRoom();
         if (!room || !Game.player) return;
 
         if (!window.Combat?.isActive?.()) {
@@ -264,4 +270,44 @@ const Engine = {
         console.log('Floor:', Game.floor.floorNumber, 'Rooms:', Game.floor.rooms.length);
         Game.floor.rooms.forEach(r => console.log(`Room ${r.id} (${r.tag}): ${r.metadata?.entities?.length || 0} entities`));
     };
+
+    function setupMobileControls() {
+    const controlsContainer = document.getElementById('mobile-controls');
+    if (!controlsContainer) return;
+
+    // Passo 1: Detecta se o dispositivo é touch
+    const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+
+    if (!isTouchDevice) {
+        controlsContainer.style.display = 'none'; // Esconde os controles no PC
+        return;
+    }
+
+    const controls = {
+        'dpad-up': 'up',
+        'dpad-down': 'down',
+        'dpad-left': 'left',
+        'dpad-right': 'right',
+        'action-btn': 'interact'
+    };
+
+    for (const [btnId, action] of Object.entries(controls)) {
+        const btn = document.getElementById(btnId);
+        if (btn) {
+            // Adiciona eventos de TOQUE
+            btn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                Input[action] = true;
+            }, { passive: false });
+
+            btn.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                Input[action] = false;
+            }, { passive: false });
+        }
+    }
+}
+
+
+    document.addEventListener('DOMContentLoaded', setupMobileControls);
 })();
