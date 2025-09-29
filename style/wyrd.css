@@ -1,59 +1,60 @@
-:root{
-    --bg:#0e0f10;
-    --panel:#171717;
-    --muted:#bfc3c9;
-    --accent:#38bdf8;
-    --accent-2:#f59e0b;
-    --good:#4ade80;
-    --bad:#ef4444;
-    --glass: rgba(255,255,255,0.03);
-    --card-shadow: 0 8px 30px rgba(0,0,0,0.6);
-    --radius:10px;
+:root {
+    --bg: #0e0f10;
+    --panel: #171717;
+    --muted: #bfc3c9;
+    --accent: #38bdf8;
+    --accent-2: #f59e0b;
+    --good: #4ade80;
+    --bad: #ef4444;
+    --glass: rgba(255, 255, 255, 0.03);
+    --card-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+    --radius: 10px;
     --mono: "Courier New", monospace;
 }
 
-*{box-sizing:border-box}
-body {
+* {
+    box-sizing: border-box;
+}
+
+html, body {
     margin: 0;
     padding: 0;
     font-family: Inter, Arial, sans-serif;
-    background: linear-gradient(180deg,#0b0b0c 0%, #0f1112 100%);
+    background-color: var(--bg);
     color: #e6e6e8;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden; /* IMPEDE QUALQUER SCROLL */
+    position: fixed; /* TRAVA O BODY NO LUGAR */
+}
+
+/* ESCONDE O HEADER E FOOTER POR PADRÃO EM TELAS PEQUENAS */
+#site-header, #site-footer {
+    display: none;
+}
+
+/* Menu Principal */
+.screen {
+    display: none;
+    width: 100%;
+    height: 100%;
+}
+.screen.active {
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
-    overflow: hidden;
+    align-items: center;
+    justify-content: center;
 }
-
-/* Header / Footer */
-#site-header, #site-footer {
-    width: 100%;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:8px 14px;
-    border-radius: 12px;
-    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-    box-shadow: var(--card-shadow);
-    color:var(--muted);
-}
-#site-header h1 { margin:0; font-size:1.1rem; color:#fff; letter-spacing:1px; }
-#site-header h2 { margin:0; font-weight:400; font-size:.85rem; color:var(--muted); }
-.header-left { display:flex; gap:12px; align-items:center; }
-.header-right .hud-mini { display:flex; gap:10px; font-size:.9rem; color:var(--muted); }
-#site-footer { margin-top:auto; font-size:.85rem; opacity:0.9; align-items:center; }
-
-/* Menu */
-.screen { display: none; }
-.screen.active { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: calc(100vh - 140px); }
 #menu-screen .menu-card {
-    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-    padding:28px;
-    border-radius:16px;
-    text-align:center;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+    padding: 28px;
+    border-radius: 16px;
+    text-align: center;
     box-shadow: var(--card-shadow);
-    width: 420px;
+    width: 90%;
+    max-width: 420px;
 }
+/* ... (regras de texto e botões do menu podem continuar as mesmas) ... */
 #menu-screen h1 { font-size:2.4rem; margin:0 0 6px 0; color:var(--accent); }
 #menu-screen h2 { font-size:1rem; margin:0 0 12px 0; color:var(--muted); }
 .menu-buttons { display:flex; justify-content:center; gap:12px; margin-top:16px; flex-wrap:wrap; }
@@ -69,19 +70,15 @@ body {
 #menu-screen button:hover { transform:translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.6); color:#fff; border-color: rgba(255,255,255,0.12); }
 .menu-tip { font-size:.8rem; color: #9aa0a6; margin-top:12px; }
 
-/* Game layout */
+
+/* Layout Principal do Jogo */
 #game-screen {
-    display: none;
-    position: fixed;
-    top: 84px;
+    position: absolute; /* USA POSIÇÃO ABSOLUTA PARA GARANTIR TELA CHEIA */
+    top: 0;
     left: 0;
-    right: 0;
-    bottom: 84px;
-    flex-direction: row;
-    width: 100%;
-    height: calc(100vh - 168px);
-    align-items: stretch;
-    justify-content: center;
+    width: 100vw;
+    height: 100vh;
+    padding: 8px; /* Adiciona um respiro nas bordas */
     z-index: 10;
 }
 
@@ -89,232 +86,103 @@ body {
     position: relative;
     display: flex;
     width: 100%;
-    max-width: 1200px;
-    margin: auto;
-    gap:12px;
+    height: 100%;
+    gap: 8px;
     align-items: stretch;
+    flex-direction: row; /* PADRÃO É LADO A LADO */
 }
 
-/* Canvas */
+/* O CANVAS - MUDANÇA CRÍTICA AQUI! */
 #game-canvas {
-    border-radius:12px;
-    border: 1px solid rgba(255,255,255,0.03);
+    border-radius: 12px;
     background-color: #111217;
-    flex: 3;
-    box-shadow: 0 18px 50px rgba(0,0,0,0.7);
-    display:block;
-    width: 100%;
-    height:100%;
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.7);
+    flex-grow: 1; /* Faz o canvas crescer e ocupar o espaço */
+    width: 100%;  /* Força a largura a se esticar */
+    height: 100%; /* Força a altura a se esticar */
+    object-fit: contain; /* Garante que o conteúdo não distorça */
 }
 
-/* UI panel */
+/* Painel da UI */
 #ui-panel {
-    flex: 1;
-    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    background: var(--panel);
     padding: 12px;
     border-radius: 12px;
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    min-width: 260px;
-    max-width: 360px;
-    border:1px solid rgba(255,255,255,0.03);
+    width: 260px; /* LARGURA FIXA INICIAL */
+    flex-shrink: 0; /* IMPEDE A UI DE ENCOLHER */
 }
 
-/* Tabs */
+/* ... (O resto das regras da UI, como .tabs, .profile-row, etc, continuam iguais) ... */
 .tabs { display:flex; gap:6px; justify-content:center; margin-bottom:10px; }
-.tab-button {
-    background:var(--glass);
-    color:var(--muted);
-    border:none;
-    padding:8px 10px;
-    border-radius:8px;
-    cursor:pointer;
-    font-size:1rem;
-    transition: all .12s;
-}
+.tab-button { background:var(--glass); color:var(--muted); border:none; padding:8px 10px; border-radius:8px; cursor:pointer; font-size:1rem; transition: all .12s; }
 .tab-button:hover { transform:translateY(-4px); color:#fff; }
 .tab-button.active { background: rgba(56,189,248,0.12); color:var(--accent); box-shadow: inset 0 -2px 0 rgba(56,189,248,0.12); }
-
-/* Profile row */
 .profile-row { display:flex; gap:12px; align-items:center; margin-bottom:8px; }
 .portrait-wrap { width:72px; height:72px; border-radius:10px; overflow:hidden; border:1px solid rgba(255,255,255,0.03); background:linear-gradient(180deg,#111,#141416); display:flex; align-items:center; justify-content:center; }
 .portrait-wrap img { width:100%; height:100%; object-fit:cover; display:block; }
 .player-stats { flex:1; font-size:.95rem; color:var(--muted); }
 .player-stats h2 { margin:0 0 6px 0; color:var(--good); font-size:.95rem; }
-
-/* UI content card */
-.ui-content {
-    flex-grow: 1;
-    overflow-y: auto;
-    background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));
-    border-radius: 10px;
-    padding: 12px;
-    min-width: 220px;
-    min-height: 100px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.6);
-}
-
-/* Log */
-.ui-log {
-    flex: none;
-    max-height: 200px;
-    background: linear-gradient(180deg, rgba(0,0,0,0.3), rgba(0,0,0,0.2));
-    padding: 10px;
-    border-radius: 8px;
-    border-top: 1px solid rgba(255,255,255,0.02);
-    overflow-y: auto;
-    font-size: 0.9em;
-    margin-top: 8px;
-}
+.ui-content { flex-grow: 1; overflow-y: auto; background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005)); border-radius: 10px; padding: 12px; min-height: 100px; box-shadow: 0 6px 18px rgba(0,0,0,0.6); }
+.ui-log { flex: none; max-height: 200px; background: linear-gradient(180deg, rgba(0,0,0,0.3), rgba(0,0,0,0.2)); padding: 10px; border-radius: 8px; border-top: 1px solid rgba(255,255,255,0.02); overflow-y: auto; font-size: 0.9em; margin-top: 8px; }
 .ui-log p { margin:6px 0; opacity:0; transform:translateY(6px); transition: all .22s ease; color:var(--muted) }
 .ui-log p.show { opacity:1; transform:none; color:#fff; }
-
 #player-health { color: var(--bad); font-weight:600; }
 #player-xp { color: var(--accent); font-weight:600; }
 #dungeon-floor { color: var(--accent-2); font-weight:600; }
-
 .tab-content { display:none; color:var(--muted); }
 .tab-content.active { display:block; }
 
-.ui-content::-webkit-scrollbar, .ui-log::-webkit-scrollbar { width:8px; }
-.ui-content::-webkit-scrollbar-thumb, .ui-log::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.04); border-radius:6px; }
 
-/* Substitua o @media (max-width: 900px) existente por este */
-@media (max-width: 900px) and (orientation: portrait) {
-    /* ESTE CSS SÓ APLICA NO CELULAR EM PÉ (PORTRAIT) */
-    #game-screen {
-        flex-direction: column;
-        top: 60px; /* Menor espaço para header */
-        bottom: 60px; /* Menor espaço para footer */
-    }
-    #game-container {
-        flex-direction: column;
-        gap: 10px;
-        padding: 6px;
-    }
-    #game-canvas {
-        flex: 1; /* Ocupa o espaço que sobrar */
-        height: auto;
-    }
-    #ui-panel {
-        width: 100%;
-        max-width: none;
-        max-height: 250px; /* Limita altura da UI */
-        min-height: 200px;
-    }
-    #site-header, #site-footer {
-        padding: 4px 10px;
-    }
-}
-
-/* Removemos o @media (max-width: 900px) and (orientation: portrait) */
-/* E o @media (max-height: 500px) and (orientation: landscape) */
-/* E usamos um mais simples e abrangente. */
-
-/* Regras para telas PEQUENAS (celulares em geral) */
-@media (max-width: 900px) {
-
-    /* ESCONDE header/footer para ganhar espaço */
-    #site-header, #site-footer {
-        display: none;
-    }
-
-    /* Ajusta a tela do jogo para ocupar TUDO */
-    #game-screen {
-        top: 0;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        height: 100vh;
-        width: 100vw;
-        padding: 8px; /* Adiciona um respiro nas bordas */
-    }
-
-    /* QUANDO O CELULAR ESTÁ DEITADO (LANDSCAPE) */
-    @media (orientation: landscape) {
-        #game-container {
-            flex-direction: row; /* Mantém UI na lateral */
-        }
-        #ui-panel {
-            min-width: 200px; /* Um pouco mais estreito */
-            max-width: 220px;
-        }
-        #mobile-controls { /* Posiciona os controles */
-            left: 15px;
-            bottom: 15px;
-            right: auto;
-        }
-    }
-
-    /* QUANDO O CELULAR ESTÁ EM PÉ (PORTRAIT) */
-    @media (orientation: portrait) {
-        #game-container {
-            flex-direction: column; /* Coloca a UI embaixo do canvas */
-        }
-        #game-canvas {
-            flex-grow: 1; /* Deixa o canvas ocupar o espaço que sobrar */
-            height: auto;
-        }
-        #ui-panel {
-            flex-shrink: 0; /* Impede que a UI encolha demais */
-            width: 100%;
-            max-width: none;
-            height: 240px; /* Altura fixa para a UI embaixo */
-        }
-    }
-}
+/* Controles Mobile */
 #mobile-controls {
     position: absolute;
-    bottom: 20px;
-    left: 20px;
-    right: 20px;
+    bottom: 15px;
+    left: 15px;
+    right: 15px;
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
-    pointer-events: none; /* Permite cliques "através" do container */
+    pointer-events: none;
     z-index: 100;
 }
+#mobile-controls.hidden { display: none; }
+.dpad { display: grid; grid-template-areas: ". up ." "left . right" ". down ."; gap: 8px; width: 150px; height: 150px; pointer-events: auto; }
+.dpad-btn, .action-btn { width: 45px; height: 45px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); color: white; font-size: 1.5rem; border-radius: 50%; cursor: pointer; user-select: none; }
+.action-btn { width: 60px; height: 60px; font-size: 2rem; pointer-events: auto; }
+#dpad-up { grid-area: up; } #dpad-down { grid-area: down; } #dpad-left { grid-area: left; } #dpad-right { grid-area: right; }
 
-#mobile-controls.hidden {
-    display: none;
+
+/* MEDIA QUERIES PARA AJUSTES FINOS */
+
+/* Celular em pé (portrait) */
+@media (orientation: portrait) {
+    #game-container {
+        flex-direction: column; /* Joga a UI para baixo */
+    }
+    #ui-panel {
+        width: 100%; /* UI ocupa toda a largura */
+        height: 250px; /* Altura fixa para a UI */
+        flex-grow: 0;
+    }
 }
 
-.dpad {
-    display: grid;
-    grid-template-areas:
-        ". up ."
-        "left . right"
-        ". down .";
-    gap: 8px;
-    width: 150px;
-    height: 150px;
-    pointer-events: auto; /* Reativa cliques para os botões */
+/* Desktop (telas largas) - Traz o Header e Footer de volta */
+@media (min-width: 900px) {
+    body {
+        position: static; /* Desfaz o 'fixed' do mobile */
+    }
+    #site-header, #site-footer {
+        display: flex; /* Mostra o header/footer */
+    }
+    #game-screen {
+        position: static; /* Desfaz o 'absolute' do mobile */
+        height: auto;
+    }
+    #game-container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
 }
-
-.dpad-btn, .action-btn {
-    width: 45px;
-    height: 45px;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: white;
-    font-size: 1.5rem;
-    border-radius: 50%;
-    cursor: pointer;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-}
-
-.action-btn {
-    width: 60px;
-    height: 60px;
-    font-size: 2rem;
-    pointer-events: auto; /* Reativa cliques para os botões */
-}
-
-#dpad-up { grid-area: up; }
-#dpad-down { grid-area: down; }
-#dpad-left { grid-area: left; }
-#dpad-right { grid-area: right; }
