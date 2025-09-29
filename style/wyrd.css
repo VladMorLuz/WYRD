@@ -208,30 +208,76 @@ body {
     }
 }
 
-@media (max-height: 500px) and (orientation: landscape) {
-    /* ESTE CSS SÓ APLICA NO CELULAR DEITADO (LANDSCAPE) */
+/* ============================================== */
+/* REGRAS PARA DISPOSITIVOS MÓVEIS       */
+/* ============================================== */
+
+/* Estilos para CELULAR DEITADO (LANDSCAPE) */
+@media screen and (orientation: landscape) and (max-height: 600px) {
     body {
-        overflow: hidden; /* Garante que não haja scroll */
+        /* Garante que a interface não seja "empurrada" pelo teclado virtual se ele aparecer */
+        min-height: 100vh;
+        min-height: -webkit-fill-available;
     }
+
+    #site-header, #site-footer {
+        display: none; /* Esconde header e footer pra dar mais espaço pro jogo */
+    }
+
     #game-screen {
         flex-direction: row; /* Mantém a UI na lateral */
+        position: absolute; /* Ocupa a tela toda */
         top: 0;
         bottom: 0;
         left: 0;
         right: 0;
-        height: 100vh; /* Ocupa 100% da altura da tela */
+        height: 100%;
         padding: 8px;
+        gap: 8px;
     }
-    #site-header, #site-footer {
-        display: none; /* Esconde header e footer pra dar mais espaço pro jogo */
-    }
+
     #ui-panel {
-        min-width: 220px; /* Reduz a largura mínima da UI */
-        max-width: 240px;
+        min-width: 240px;
+        max-width: 260px; /* Um pouco mais de espaço para a UI */
     }
+
     #mobile-controls {
         bottom: 10px;
         left: 10px;
+        right: auto; /* Garante que ele fique só na esquerda */
+    }
+}
+
+/* Estilos para CELULAR EM PÉ (PORTRAIT) */
+@media screen and (orientation: portrait) and (max-width: 900px) {
+    #game-screen {
+        flex-direction: column;
+        top: 60px;
+        bottom: 50px;
+    }
+
+    #game-container {
+        flex-direction: column;
+        gap: 10px;
+        padding: 6px;
+        height: 100%;
+    }
+
+    #game-canvas {
+        flex-grow: 1; /* Deixa o canvas ocupar o espaço vertical disponível */
+        min-height: 200px; /* Garante uma altura mínima pro canvas */
+    }
+
+    #ui-panel {
+        width: 100%;
+        max-width: none;
+        flex-shrink: 0; /* Impede que a UI encolha */
+        max-height: 45%; /* Limita a altura em porcentagem */
+    }
+
+    #site-header, #site-footer {
+        padding: 4px 10px;
+        flex-shrink: 0;
     }
 }
 #mobile-controls {
