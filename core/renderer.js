@@ -32,6 +32,33 @@
         return !!canvas;
     }
 
+    function redrawCurrentScene() {
+        // Se o objeto Game não existe ou o jogo não começou, não faz nada.
+        if (!window.Game || !window.Game.running) {
+            clear(); // Garante que a tela fique limpa se o jogo não estiver rodando.
+            return;
+        }
+
+        // Se estivermos em combate, o loop de combate já cuida de se desenhar.
+        if (window.Combat && window.Combat.isActive()) {
+            return;
+        }
+
+        // Se estivermos explorando, pega os dados atuais e desenha a sala.
+        const room = window.Game.floor?.getRoomById(window.Game.currentRoomId);
+        if (!room) {
+            console.error("Redraw falhou: sala atual não encontrada!");
+            clear();
+            return;
+        }
+
+        const player = window.Game.player;
+        const entities = window.Game.entities || [];
+
+        // Chama a função de desenhar que já existe com os dados atuais.
+        drawRoom(room, player, entities.filter(e => e.alive));
+    }
+
     function _setupPixelRatio() {
         if (!canvas) return; // Garante que o canvas existe
 
@@ -374,19 +401,10 @@
     // No final do arquivo renderer.js, antes do `})();`
 
     // Listener para redimensionar o canvas se a janela mudar de tamanho
+    // Substitua o listener de resize antigo por este
     window.addEventListener('resize', () => {
-        if (canvas) {
-            _setupPixelRatio();
-            // Opcional: Redesenha a sala atual para não ficar uma tela preta vazia
-            if (window.Game && window.Game.running) {
-                const room = window.Game.floor?.getRoomById(window.Game.currentRoomId);
-                const player = window.Game.player;
-                const entities = window.Game.entities;
-                if (room) {
-                    drawRoom(room, player, entities.filter(e => e.alive));
-                }
-            }
-        }
+        _setupPixelRatio();
+        redrawCurrentScene(); // Chama nossa nova função para garantir o redesenho
     }, { passive: true });
 
     window.Renderer = {
@@ -406,6 +424,8 @@
         shakePlayer,
         flashEntity,
         drawBattleEntity, 
+        redrawCurrentScene,  // <--- ADICIONE ESTA LINHA
+
         _internal: {
             _opts: opts
         }

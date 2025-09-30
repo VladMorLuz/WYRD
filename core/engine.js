@@ -233,8 +233,9 @@ const Engine = {
         Game.running = true;
         window.Renderer?.init?.();
         window.UI?.updateFloor?.(Game.floor.floorNumber);
-        window.Renderer?.drawRoom?.(startRoom, Game.player, Game.entities.filter(e => e.alive));
-        updateUI();
+        window.Renderer?.redrawCurrentScene();
+
+
         window.UI?.log?.(`Bem-vindo ao Andar ${Game.floor.floorNumber}! 🏰`);
         requestAnimationFrame(gameTick);
         
