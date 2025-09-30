@@ -172,8 +172,7 @@
 
         clear();
         const tileSize = opts.tileSize;
-        const { offsetX, offsetY, roomWpx, roomHpx } = computeRoomOffset(room);
-
+const { offsetX, offsetY } = computeRoomOffset(room, player);
         for (let y = 0; y < room.h; y++) {
             for (let x = 0; x < room.w; x++) {
                 const tile = (room.tiles[y] && room.tiles[y][x]) !== undefined ? room.tiles[y][x] : window.TILE.FLOOR;
@@ -335,7 +334,7 @@
 
     function tileToScreen(room, tx, ty) {
         if (!canvas) ensureCanvas();
-        const { offsetX, offsetY } = computeRoomOffset(room);
+        const { offsetX, offsetY } = computeRoomOffset(room, window.Game?.player);
         return {
             x: offsetX + tx * opts.tileSize,
             y: offsetY + ty * opts.tileSize
@@ -344,7 +343,7 @@
 
     function screenToTile(room, sx, sy) {
         if (!canvas) ensureCanvas();
-        const { offsetX, offsetY, roomWpx, roomHpx } = computeRoomOffset(room);
+        const { offsetX, offsetY } = computeRoomOffset(room, window.Game?.player);
         const localX = sx - offsetX;
         const localY = sy - offsetY;
         if (localX < 0 || localY < 0 || localX >= roomWpx || localY >= roomHpx) return null;
