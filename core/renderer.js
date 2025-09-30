@@ -90,16 +90,46 @@
         ctx.fillRect(0, 0, canvas.width / devicePixelRatioCached, canvas.height / devicePixelRatioCached);
     }
 
-    function computeRoomOffset(room) {
+    // Em core/renderer.js
+    // SUBSTITUA A FUNÇÃO ANTIGA POR ESTA
+    function computeRoomOffset(room, player) { // Agora a função recebe o 'player'
         const tileSize = opts.tileSize;
         const canvasW = canvas.width / devicePixelRatioCached;
         const canvasH = canvas.height / devicePixelRatioCached;
+
+        // Se não tiver um jogador, centraliza a sala como antes (fallback)
+        if (!player) {
+            const roomWpx = room.w * tileSize;
+            const roomHpx = room.h * tileSize;
+            const offsetX = Math.floor((canvasW - roomWpx) / 2);
+            const offsetY = Math.floor((canvasH - roomHpx) / 2);
+            return { offsetX, offsetY };
+        }
+
+        // LÓGICA DA CÂMERA NO JOGADOR
+        // 1. Calcula onde o centro da tela deveria estar, baseado na posição do jogador.
+        const targetX = player.x * tileSize;
+        const targetY = player.y * tileSize;
+
+        // 2. Calcula o deslocamento (offset) para colocar o jogador no meio do canvas.
+        let offsetX = Math.floor(canvasW / 2 - targetX);
+        let offsetY = Math.floor(canvasH / 2 - targetY);
+
+        // 3. Limites da câmera: impede que a câmera mostre áreas fora da sala (paredes pretas)
         const roomWpx = room.w * tileSize;
         const roomHpx = room.h * tileSize;
+        
+        // Limita o scroll para a direita (não deixa a borda esquerda da sala passar do meio da tela)
+        offsetX = Math.min(0, offsetX);
+        // Limita o scroll para a esquerda (não deixa a borda direita da sala passar do meio da tela)
+        offsetX = Math.max(canvasW - roomWpx, offsetX);
 
-        const offsetX = Math.floor((canvasW - roomWpx) / 2);
-        const offsetY = Math.floor((canvasH - roomHpx) / 2);
-        return { offsetX, offsetY, canvasW, canvasH, roomWpx, roomHpx };
+        // Limita o scroll para baixo
+        offsetY = Math.min(0, offsetY);
+        // Limita o scroll para cima
+        offsetY = Math.max(canvasH - roomHpx, offsetY);
+
+        return { offsetX, offsetY };
     }
 
     function loadSprite(name, path) {
